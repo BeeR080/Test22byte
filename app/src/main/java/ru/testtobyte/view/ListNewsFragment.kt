@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import ru.testtobyte.adapters.NewsAdapter
 import ru.testtobyte.data.NewsViewmodel
 import ru.testtobyte.data.news.Article
+import ru.testtobyte.data.newsServiceApi
 import ru.testtobyte.databinding.FragmentListNewsBinding
 
 
@@ -53,20 +54,19 @@ initProgress()
 
 
     private fun getAllNews(){
+        lifecycleScope.launch {
+            viewModelNews.getNewsEverything("news")
+            viewModelNews.listEveryNews.observe(viewLifecycleOwner){listNews->
+                adapter.submitList(filterlist(listNews))
+                disableProgress()
 
-        CoroutineScope(Dispatchers.IO).launch{
-    val list = viewModelNews.getNewsEverything("news")
+            }
+        }
 
-        activity?.runOnUiThread{
-    adapter.submitList(filterlist(list))
-            disableProgress()
        }
 
-}
 
 
-
-    }
 
 
 
@@ -76,13 +76,14 @@ initProgress()
             SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(text: String): Boolean {
                     checkTotalResults(text)
-                CoroutineScope(Dispatchers.IO).launch {
-                    val list = viewModelNews.getNewsEverything(text)
-                    activity?.runOnUiThread{
-                    adapter.submitList(filterlist(list))
+               lifecycleScope.launch {
+                   viewModelNews.getNewsEverything(text)
+                viewModelNews.listEveryNews.observe(viewLifecycleOwner){listNews->
+                adapter.submitList(filterlist(listNews))
+}
 
-                }
-                }
+               }
+
 
                 return true
             }

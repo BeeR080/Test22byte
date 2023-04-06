@@ -2,30 +2,41 @@ package ru.testtobyte.data
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.testtobyte.data.news.Article
 import ru.testtobyte.data.topnews.Source
 
-class NewsViewmodel(application: Application) : AndroidViewModel(application) {
+class NewsViewmodel() : ViewModel() {
 
-    private var repository: NewsRepository
+    private var repository: NewsRepository = NewsRepository()
+    val listTopNews: MutableLiveData<List<Source>> = MutableLiveData()
+    val listEveryNews: MutableLiveData<List<Article>> = MutableLiveData()
 
-    init {
-    repository = NewsRepository()
+    suspend fun checkTotalResults(query: String):Int {
 
-    }
-    suspend fun checkTotalResults(query: String):Int{
 
         return repository.checkTotalResult(query)
     }
 
-    suspend fun getNewsEverything(query: String):List<Article>{
+    suspend fun getNewsEverything(query: String){
+        viewModelScope.launch {
+            val response = repository.getNewsEverything(query)
+            listEveryNews.value = response
+        }
 
-        return repository.getNewsEverything(query)
+
 
     }
 
-    suspend fun getTopNews():List<Source>{
-
-        return repository.getTopNews()
+    suspend fun getTopNews() {
+    viewModelScope.launch {
+    val response = repository.getTopNews()
+        listTopNews.value = response
+    }
 }
 }

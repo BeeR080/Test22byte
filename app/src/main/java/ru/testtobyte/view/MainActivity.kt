@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         bottomNavItemClickListener()
         supportFragmentManager
             .beginTransaction()
-            .add(R.id.fragment, ListNewsFragment())
+            .replace(R.id.fragment, ListNewsFragment())
             .commit()
 
     }

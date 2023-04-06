@@ -44,4 +44,5 @@ class TopNewsAdapter:ListAdapter<Source, TopNewsAdapter.NewsViewHolder>(DiffUtil
 
     }
 
+
 }

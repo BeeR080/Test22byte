@@ -8,9 +8,11 @@ class NewsRepository {
 
     suspend fun getNewsEverything(query:String):List<Article>{
       val query = newsServiceApi.getNews(query)
-        val newsList = query.body()!!.articles
-        return newsList
+        if(query.isSuccessful) return query.body()!!.articles
+
+            return emptyList()
     }
+
     suspend fun checkTotalResult(query: String):Int{
         val querry = newsServiceApi.getNews(query)
         val newsTotal = querry.body()!!.totalResults
@@ -19,7 +21,9 @@ class NewsRepository {
 
     suspend fun getTopNews(): List<Source> {
         val query = newsServiceApi.getTopNews()
-        val newsList = query.body()!!.sources
-        return newsList
+        if(query.isSuccessful) return query.body()!!.sources
+
+     return emptyList()
     }
+
 }

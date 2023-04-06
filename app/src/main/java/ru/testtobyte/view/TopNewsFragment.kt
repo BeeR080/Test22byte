@@ -8,11 +8,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.testtobyte.R
-import ru.testtobyte.adapters.NewsAdapter
 import ru.testtobyte.adapters.TopNewsAdapter
 import ru.testtobyte.data.NewsViewmodel
 import ru.testtobyte.databinding.FragmentTopNewsBinding
@@ -40,15 +36,17 @@ class TopNewsFragment : Fragment() {
     }
 
     private fun getTopNews(){
+        lifecycleScope.launch {
+            viewModelNews.getTopNews()
+            viewModelNews.listTopNews.observe(viewLifecycleOwner){topNews->
+                adapter.submitList(topNews)
+            }
 
-        CoroutineScope(Dispatchers.IO).launch{
-            val list = viewModelNews.getTopNews()
-
-            activity?.runOnUiThread{
-            adapter.submitList(list)
             disableProgress()
         }
-        }
+
+
+
 
 
 }
