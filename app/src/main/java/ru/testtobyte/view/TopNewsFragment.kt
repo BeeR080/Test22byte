@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.testtobyte.R
 import ru.testtobyte.adapters.NewsAdapter
@@ -39,11 +41,13 @@ class TopNewsFragment : Fragment() {
 
     private fun getTopNews(){
 
-        lifecycleScope.launch{
+        CoroutineScope(Dispatchers.IO).launch{
             val list = viewModelNews.getTopNews()
 
+            activity?.runOnUiThread{
             adapter.submitList(list)
             disableProgress()
+        }
         }
 
 

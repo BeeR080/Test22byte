@@ -10,6 +10,8 @@ import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.testtobyte.adapters.NewsAdapter
 import ru.testtobyte.data.NewsViewmodel
@@ -38,6 +40,7 @@ getAllNews()
 getNews()
 initProgress()
 
+
         return binding.root
     }
     private fun filterlist(list:List<Article>):List<Article>{
@@ -51,14 +54,20 @@ initProgress()
 
     private fun getAllNews(){
 
-lifecycleScope.launch{
+        CoroutineScope(Dispatchers.IO).launch{
     val list = viewModelNews.getNewsEverything("news")
 
+        activity?.runOnUiThread{
     adapter.submitList(filterlist(list))
-    disableProgress()
+            disableProgress()
+       }
+
 }
 
+
+
     }
+
 
 
     private fun getNews(){
@@ -66,13 +75,15 @@ lifecycleScope.launch{
         searchView.setOnQueryTextListener(object : OnQueryTextListener,
             SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(text: String): Boolean {
-                lifecycleScope.launch {
                     checkTotalResults(text)
-
+                CoroutineScope(Dispatchers.IO).launch {
                     val list = viewModelNews.getNewsEverything(text)
+                    activity?.runOnUiThread{
                     adapter.submitList(filterlist(list))
 
                 }
+                }
+
                 return true
             }
 
@@ -91,8 +102,9 @@ lifecycleScope.launch{
         notFound.visibility = View.GONE
         initProgress()
 
-        lifecycleScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             val totalResult = viewModelNews.checkTotalResults(query)
+            activity?.runOnUiThread{
             if (totalResult == 0) {
                 disableProgress()
                 notFound.visibility = View.VISIBLE
@@ -100,6 +112,7 @@ lifecycleScope.launch{
                 disableProgress()
 
             }
+        }
         }
 
 
